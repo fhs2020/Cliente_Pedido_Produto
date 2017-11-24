@@ -1,0 +1,81 @@
+﻿@model IEnumerable<ProductStore.Models.Order>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Pedidos</h2>
+
+<p>
+    @Html.ActionLink("Adicionar novo pedido", "Create")
+</p>
+
+@using (Html.BeginForm())
+{
+
+    <div class="row" style="margin-left: 650px;">
+        <div class="col-lg-6">
+            @Html.Editor("Search", new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <input style="margin-left: 50px;" type="submit" value="Pesquisar" class="btn btn-primary btn-md" />
+        <br />
+    </div>
+
+}
+<br />
+
+
+<table class="table">
+    <tr>
+        <th>
+            Cliente
+        </th>
+        <th>
+           Número do pedido
+        </th>
+        <th>
+            Consultor
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Customer)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NomeConsultor)
+        </td>
+        <td>
+            @Html.ActionLink("Editar", "Create", "OrderDetail", new { id=item.Id }, null) |
+
+            @Html.ActionLink("Excluir", "Delete", new { id=item.Id })
+        </td>
+    </tr>
+}
+
+</table>
+
+
+
+@section Scripts {
+
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/inputmask/inputmask.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $('#Search').focus(function () {
+            $(this).animate({ width: '+=50' }, 'slow');
+        }).blur(function () {
+            $(this).animate({ width: '-=50' }, 'slow');
+        });
+    </script>
+
+}

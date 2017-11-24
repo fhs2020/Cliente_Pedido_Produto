@@ -1,0 +1,544 @@
+﻿@model ProductStore.Models.OrderDetail
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Novo pedido para @ViewBag.CustomerName</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(model => model.OrderId)
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.ProductId, "Selecione produto", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownList("ProductId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProductId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Quantity, "Quantidade", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Adicionar" class="btn btn-success" id="AdicionarItem" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Voltar para lista de pedidos", "Index", "Order")
+</div>
+
+
+<br />
+@*<div class="checkbox">
+        <label style="font-size: 2em">
+            <input type="checkbox" value="" checked>
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Big
+        </label>
+    </div>
+    <div class="checkbox">
+        <label style="font-size: 1.5em">
+            <input type="checkbox" value="" checked>
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Bigger
+        </label>
+    </div>
+    <div class="checkbox">
+        <label style="font-size: 1em">
+            <input type="checkbox" value="" checked>
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Default
+        </label>
+    </div>
+    <div class="checkbox">
+        <label style="font-size: .8em">
+            <input type="checkbox" value="" checked>
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Smaller
+        </label>
+    </div>
+    <div class="checkbox">
+        <label style="font-size: .5em">
+            <input type="checkbox" value="" checked>
+            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+            Small
+        </label>
+    </div>
+        </div>*@
+
+
+
+<div>
+
+</div>
+
+<table class="table table-striped" id="myTable">
+    <thead>
+        <tr>
+            <th>Produto</th>
+            <th>Quantidade</th>
+            <th>Valor</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody id="SetItemList">
+        <tr style="color:red"></tr>
+    </tbody>
+</table>
+
+<p id="LoadingStatus" style="float:right; margin-right: 250px;"></p>
+<br />
+<br />
+<hr />
+
+<div class="col-xs-12 col-sm-12">
+    <form class="form-inline">
+        <div class="">
+            Tipo pagamento:
+
+            @if (ViewBag.Cheque == true)
+            {
+                <label>&nbsp; Cheque</label>
+                <input type="checkbox" id="cheque" checked>
+            }
+            else
+            {
+                <label>&nbsp; Cheque</label>
+                <input type="checkbox" id="cheque">
+            }
+
+
+            @if (ViewBag.Boleto == true)
+            {
+                <label>&nbsp; Boleto</label>
+                <input type="checkbox" id="boleto" checked="" />
+            }
+            else
+            {
+                <label>&nbsp; Boleto</label>
+                <input type="checkbox" id="boleto" />
+            }
+
+            @if (ViewBag.Credito == true)
+            {
+                <label>&nbsp; Cartão de credito</label>
+                <input type="checkbox" id="cartaoCredito" checked="checked" />
+            }
+            else
+            {
+                <label>&nbsp; Cartão de credito</label>
+                <input type="checkbox" id="cartaoCredito" />
+            }
+
+
+            <button id="enviar" class="btn btn-primary btn-md glyphicon-envelope" style="margin-left: 50px; margin-bottom:15px;" type="button">
+                Enviar pedido
+            </button>
+        </div>
+        <p></p>
+    </form>
+</div>
+
+<hr />
+
+
+<p>Mensalidade/Por Animal</p>
+<table class="table table-striped" id="serviceTable">
+    <thead>
+        <tr>
+            <th>Ano</th>
+            <th>Mensalidade</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody id="setInfo">
+        <tr style="color:red"></tr>
+    </tbody>
+</table>
+
+<br />
+
+<p>Serviço Premium Mensalidade/Por Animal</p>
+
+<table class="table table-striped" id="serviceTablePremium">
+    <thead>
+        <tr>
+            <th>Ano</th>
+            <th>Mensalidade</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody id="setInfoPremium"></tbody>
+</table>
+
+<style>
+    input[type='checkbox'] {
+        width: 23px;
+        height: 23px;
+        border-radius: 5px;
+        border: 3px solid #555;
+    }
+</style>
+
+
+@section Scripts {
+
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+
+    <script type="text/javascript">
+
+        // $("#LoadingStatus").html("Carregando....");
+        var pedidoId = $('#OrderId').val();
+
+
+
+        $("#AdicionarItem").click(function () {
+            var pedidoID = $("#OrderId").val();
+            var produtoID = $("#ProductId").val();
+            var quantidade = $('#Quantity').val();
+
+            $.ajax({
+                type: "Post",
+                url: "/OrderDetail/Edit",
+                data: { pedidoID: pedidoID, produtoID: produtoID, quantidade: quantidade },
+                success: function (resultado) {
+                    debugger;
+                    if (resultado.Success == "True") {
+                        alert("Produto adicionado com Successo!..");
+                        // $("#MyModal").modal("hide");
+                        window.location.reload();
+                        //window.location.href = "/OrderDetail/Create/" + pedidoID;
+                        $.fn.myFunction();
+                    }
+                    else {
+                        alert(resultado.Message);
+                    }
+
+                }
+
+            })
+        });
+
+
+        $("#enviar").click(function () {
+            var pedidoID = $("#OrderId").val();
+            var cheque = $('#cheque:checked').val();
+            var boleto = $("#boleto:checked").val();
+            var credito = $('#cartaoCredito:checked').val();
+
+            debugger;
+
+            if (cheque == "on") {
+
+                cheque = true;
+            }
+            else {
+                cheque = false;
+            }
+
+            if (boleto == "on") {
+                boleto = true;
+            }
+            else {
+                boleto = false;
+            }
+
+            if (credito == "on") {
+
+                credito = true;
+            }
+            else {
+                credito = false;
+            }
+
+
+            $.ajax({
+                type: "Post",
+                url: "/OrderDetail/PostSendGmail",
+                data: { id: pedidoID, pagamentoCheque: cheque, pagamentoBoleto: boleto, pagamentoCartao: credito },
+                success: function () {
+                    alert("Pedido enviado com successo!..");
+                    // $("#MyModal").modal("hide");
+                    //url.location('/Order/Index');
+                    window.location.href = "/Order/Index/";
+                    $.fn.myFunction();
+                }
+
+            })
+        });
+
+
+
+        $(document).ready(function () {
+            $.fn.myFunction = function () {
+                debugger;
+                var url = "/OrderDetail/GetCartItems?id=" + pedidoId;
+
+                $.ajax({
+                    url: url,
+                    data: { pedidoId: pedidoId },
+                    type: "POST",
+                    cache: false,
+                    success: function (ListaItems) {
+                        var count = 0;
+
+                        var SetData = $("#SetItemList");
+
+                        var setInfo = $("#setInfo");
+
+                        var setInfoPremium = $("#setInfoPremium");
+
+                        var count = 0;
+
+                        var basico = 0;
+
+                        var premium = 0;
+
+
+                        for (var i = 0; i < ListaItems.length; i++) {
+
+                            count += ListaItems[i].Total;
+
+
+                            if (ListaItems[i].SensorBasico == true) {
+                                basico += ListaItems[i].Quantity;
+                            }
+
+                            if (ListaItems[i].SensorPremium == true) {
+                                premium += ListaItems[i].Quantity;
+                            }
+
+                            var Data = "<tr id='" + ListaItems[i].ID + "'>" +
+                                "<td>" + ListaItems[i].ProdutoNome + "</td>" +
+                                "<td>" + ListaItems[i].Quantity + "</td>" +
+                                "<td> R$ " + ListaItems[i].ValorProdudo + "</td>" +
+                                "<td> R$ " + ListaItems[i].Total + "</td>" +
+
+                                "<td>" + "<a href='#' class='btn btn-danger' onclick='deleteItem(" + ListaItems[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
+                                "</tr>";
+                            SetData.append(Data);
+                            $("#LoadingStatus").html("Total de todos os produtos: R$ " + count);
+                        }
+
+                        var primeiroAno = (12.00 * basico);
+                        var segundoAno = (9.90 * basico);
+                        var terceiroAno = (7.90 * basico);
+                        var quartoAno = (6.90 * basico);
+
+                        var servicoInfo = "<tr>" +
+                            "<td>  " + "1°" + "</td>" +
+                            "<td>" + "12,00" + "</td>" +
+                            "<td> R$ " + primeiroAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "2°" + "</td>" +
+                            "<td>" + "9,90" + "</td>" +
+                            "<td> R$ " + segundoAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "3°" + "</td>" +
+                            "<td>" + "7,90" + "</td>" +
+                            "<td> R$ " + terceiroAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "4°" + "</td>" +
+                            "<td>" + "6,90" + "</td>" +
+                            "<td> R$ " + quartoAno + "</td>" +
+                            "</tr>";
+
+
+
+                        setInfo.append(servicoInfo);
+
+
+
+                        var segundoAnoP = (9.90 * premium);
+                        var terceiroAnoP = (7.90 * premium);
+                        var quartoAnoP = (6.90 * premium);
+
+                        var servicoInfoPremium = "<tr>" +
+                            "<td>  " + "1°" + "</td>" +
+                            "<td>" + "0" + "</td>" +
+                            "<td> R$ " + "0" + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "2°" + "</td>" +
+                            "<td>" + "9,90" + "</td>" +
+                            "<td> R$ " + segundoAnoP + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "3°" + "</td>" +
+                            "<td>" + "7,90" + "</td>" +
+                            "<td> R$ " + terceiroAnoP + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "4°" + "</td>" +
+                            "<td>" + "6,90" + "</td>" +
+                            "<td> R$ " + quartoAnoP + "</td>" +
+                            "</tr>";
+
+
+
+                        setInfoPremium.append(servicoInfoPremium);
+                    }
+                });
+
+            };
+        });
+
+
+        $(document).ready(function () {
+
+            var url = "/OrderDetail/GetCartItems?id=" + pedidoId;
+
+            $.ajax({
+                url: url,
+                data: { pedidoId: pedidoId },
+                type: "POST",
+                cache: false,
+                success: function (ListaItems) {
+                    var count = 0;
+
+                    var SetData = $("#SetItemList");
+
+                    var setInfo = $("#setInfo");
+
+                    var setInfoPremium = $("#setInfoPremium");
+
+                    var count = 0;
+
+                    var basico = 0;
+
+                    var premium = 0;
+
+
+                    for (var i = 0; i < ListaItems.length; i++) {
+
+                        count += ListaItems[i].Total;
+
+
+
+                        var Data = "<tr id='" + ListaItems[i].ID + "'>" +
+                            "<td>" + ListaItems[i].ProdutoNome + "</td>" +
+                            "<td>" + ListaItems[i].Quantity + "</td>" +
+                            "<td> R$ " + ListaItems[i].ValorProdudo + "</td>" +
+                            "<td> R$ " + ListaItems[i].Total + "</td>" +
+
+                            "<td>" + "<a href='#' class='btn btn-danger' onclick='deleteItem(" + ListaItems[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
+                            "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html("Total de todos os produtos: R$ " + count);
+
+
+                        if (ListaItems[i].SensorBasico == true) {
+                            basico += ListaItems[i].Quantity;
+                        }
+
+                        if (ListaItems[i].SensorPremium == true) {
+                            premium += ListaItems[i].Quantity;
+                        }
+                    }
+
+                    var primeiroAno = (12.00 * basico);
+                    var segundoAno = (9.90 * basico);
+                    var terceiroAno = (7.90 * basico);
+                    var quartoAno = (6.90 * basico);
+
+                    if (basico > 0) {
+
+                        var servicoInfo = "<tr>" +
+                            "<td>  " + "1°" + "</td>" +
+                            "<td>" + "12,00" + "</td>" +
+                            "<td> R$ " + primeiroAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "2°" + "</td>" +
+                            "<td>" + "9,90" + "</td>" +
+                            "<td> R$ " + segundoAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "3°" + "</td>" +
+                            "<td>" + "7,90" + "</td>" +
+                            "<td> R$ " + terceiroAno + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "4°" + "</td>" +
+                            "<td>" + "6,90" + "</td>" +
+                            "<td> R$ " + quartoAno + "</td>" +
+                            "</tr>";
+
+                        setInfo.append(servicoInfo);
+                    }
+
+
+                    var segundoAnoP = (9.90 * premium);
+                    var terceiroAnoP = (7.90 * premium);
+                    var quartoAnoP = (6.90 * premium);
+
+                    if (premium > 0) {
+
+                        var servicoInfoPremium = "<tr>" +
+                            "<td>  " + "1°" + "</td>" +
+                            "<td>" + "0" + "</td>" +
+                            "<td> R$ " + "0" + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "2°" + "</td>" +
+                            "<td>" + "9,90" + "</td>" +
+                            "<td> R$ " + segundoAnoP + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "3°" + "</td>" +
+                            "<td>" + "7,90" + "</td>" +
+                            "<td> R$ " + terceiroAnoP + "</td>" +
+                            "</tr>" +
+                            "<tr>" +
+                            "<td>  " + "4°" + "</td>" +
+                            "<td>" + "6,90" + "</td>" +
+                            "<td> R$ " + quartoAnoP + "</td>" +
+                            "</tr>";
+
+                        setInfoPremium.append(servicoInfoPremium);
+                    }
+                }
+            });
+
+        });
+
+
+        var deleteItem = function (Id) {
+
+            $.ajax({
+                type: "Post",
+                url: "/OrderDetail/Excluir",
+                data: { id: Id },
+                success: function (order) {
+                    alert("Item excluido com successo!..");
+                    location.reload(true);
+
+                }
+            })
+        };
+
+
+    </script>
+}

@@ -1,0 +1,117 @@
+﻿@model IEnumerable<ProductStore.Models.Cliente>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Clientes</h2>
+
+<p>
+    @Html.ActionLink("Adicionar novo", "Create")
+</p>
+
+@using (Html.BeginForm())
+{
+
+    <div class="row" style="margin-left: 650px;">
+        <div class="col-lg-6">
+            @Html.Editor("Search", new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+        <input style="margin-left: 50px;" type="submit" value="Pesquisar" class="btn btn-primary btn-md" />
+        <br />
+    </div>
+
+}
+<br />
+
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Nome)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Fazenda)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CPF)
+        </th>
+        <th>
+            Endereço Residencial
+        </th>
+        <th>
+            Endereço Rural
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model.Telefone)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th>
+            Consultor
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fazenda)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CPF)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.EnderecoResidencial)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EnderecoRural)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VendedorNome)
+            </td>
+            <td>
+                @Html.ActionLink("Editar", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Detalhes", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Excluir", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+@section Scripts {
+
+
+    <script src="~/Scripts/jquery-1.10.2.js"></script>
+    <script src="~/Scripts/inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/inputmask/inputmask.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $('#Search').focus(function () {
+            $(this).animate({ width: '+=50' }, 'slow');
+        }).blur(function () {
+            $(this).animate({ width: '-=50' }, 'slow');
+        });
+    </script>
+
+}
+
+
+
+
