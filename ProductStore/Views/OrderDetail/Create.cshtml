@@ -46,42 +46,6 @@
 
 
 <br />
-@*<div class="checkbox">
-        <label style="font-size: 2em">
-            <input type="checkbox" value="" checked>
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Big
-        </label>
-    </div>
-    <div class="checkbox">
-        <label style="font-size: 1.5em">
-            <input type="checkbox" value="" checked>
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Bigger
-        </label>
-    </div>
-    <div class="checkbox">
-        <label style="font-size: 1em">
-            <input type="checkbox" value="" checked>
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Default
-        </label>
-    </div>
-    <div class="checkbox">
-        <label style="font-size: .8em">
-            <input type="checkbox" value="" checked>
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Smaller
-        </label>
-    </div>
-    <div class="checkbox">
-        <label style="font-size: .5em">
-            <input type="checkbox" value="" checked>
-            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-            Small
-        </label>
-    </div>
-        </div>*@
 
 
 
@@ -200,7 +164,7 @@
 
 @section Scripts {
 
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+   <script src="~/Scripts/jquery-3.0.0.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
     @*@Scripts.Render("~/bundles/jqueryval")*@
 
@@ -331,12 +295,12 @@
                                 "<td>" + ListaItems[i].ProdutoNome + "</td>" +
                                 "<td>" + ListaItems[i].Quantity + "</td>" +
                                 "<td> R$ " + ListaItems[i].ValorProdudo + "</td>" +
-                                "<td> R$ " + ListaItems[i].Total + "</td>" +
+                                    "<td> R$ " + ListaItems[i].Total + "</td>" +
 
                                 "<td>" + "<a href='#' class='btn btn-danger' onclick='deleteItem(" + ListaItems[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
                                 "</tr>";
                             SetData.append(Data);
-                            $("#LoadingStatus").html("Total de todos os produtos: R$ " + count);
+                            $("#LoadingStatus").html("Total de todos os produtos: R$ " + count.toLocaleString('pt-br', { minimumFractionDigits: 2 }));
                         }
 
                         var primeiroAno = (12.00 * basico);
@@ -435,18 +399,16 @@
 
                         count += ListaItems[i].Total;
 
-
-
                         var Data = "<tr id='" + ListaItems[i].ID + "'>" +
                             "<td>" + ListaItems[i].ProdutoNome + "</td>" +
                             "<td>" + ListaItems[i].Quantity + "</td>" +
                             "<td> R$ " + ListaItems[i].ValorProdudo + "</td>" +
-                            "<td> R$ " + ListaItems[i].Total + "</td>" +
+                                "<td> R$ " + ListaItems[i].Total + "</td>" +
 
                             "<td>" + "<a href='#' class='btn btn-danger' onclick='deleteItem(" + ListaItems[i].Id + ")'><span class='glyphicon glyphicon-trash'></span></a>" + "</td>" +
                             "</tr>";
                         SetData.append(Data);
-                        $("#LoadingStatus").html("Total de todos os produtos: R$ " + count);
+                        $("#LoadingStatus").html("Total de todos os produtos: R$ " + count.toLocaleString('pt-br', { minimumFractionDigits: 2 }));
 
 
                         if (ListaItems[i].SensorBasico == true) {

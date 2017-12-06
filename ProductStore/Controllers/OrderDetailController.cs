@@ -200,13 +200,13 @@ namespace ProductStore.Controllers
             client.Port = 587;
             // setup Smtp authentication
             System.Net.NetworkCredential credentials =
-                new System.Net.NetworkCredential("ruraltech@repnovageracao.com.br", "Cristo25");
+                new System.Net.NetworkCredential("flavio.ti@repnovageracao.com.br", "baller100");
             client.UseDefaultCredentials = false;
             client.Credentials = credentials;
             //can be obtained from your model
             MailMessage msg = new MailMessage();
             msg.From = new MailAddress("ruraltech@repnovageracao.com.br");
-            //msg.To.Add(new MailAddress("ruraltech@repnovageracao.com.br"));
+            msg.To.Add(new MailAddress("ruraltech@repnovageracao.com.br"));
             msg.To.Add(new MailAddress(usuario.UserName));
 
             msg.Subject = "Pedido Enviado com sucesso";
